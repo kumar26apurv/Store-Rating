@@ -1,94 +1,82 @@
-# Roxiler Store Rating Platform API
+# ⭐ Store Rating Platform (Full Stack MERN + SQL)
 
-An authenticated, role-based backend API for managing users, stores, and handling transactional, self-correcting rating submissions and modifications.
+A full-stack web application where users can browse stores and rate them (1–5).  
+The platform includes role-based access for **System Admin**, **Store Owner**, and **Normal Users** with dashboards, store management, user management, and rating system.
 
-## 1. Tech Stack & Tools
+This project was developed as part of the **FullStack Intern Coding Challenge** assignment.
 
-* **Backend:** Node.js, Express.js
-* **Database:** PostgreSQL
-* **ORM:** Sequelize (Transactions, Migrations, Seeders)
-* **Security/Middleware:** `bcryptjs`, `jsonwebtoken` (JWT), `express-validator`, `cors`.
+---
 
-## 2. Setup & Installation (Getting Started)
+## 📌 Project Overview
 
-### Prerequisites
-* Node.js (v18+ recommended)
-* PostgreSQL server
+The **Store Rating Platform** allows:
 
-### Installation Steps
+✅ Normal users to browse stores and submit ratings  
+✅ Store owners to view their store dashboard and ratings received  
+✅ Admin to manage users, create store owners, create stores, and monitor total platform stats
 
-1.  **Clone the repository:**
-    ```bash
-    git clone <repository-url>
-    ```
-2.  **Navigate and Install:**
-    ```bash
-    cd roxiler-challange
-    npm install
-    ```
-3.  **Environment Configuration (`.env`):** Create and configure your database and JWT secret variables.
+---
 
-### Database Initialization
+## 🚀 Features
 
-1.  **Run Migrations:**
-    ```bash
-    npx sequelize db:migrate
-    ```
-2.  **Run Seeders (Initial Admin):** 
-    ```bash
-    npx sequelize db:seed:all
-    ```
-3.  **Start Server:**
-    ```bash
-    npm start
-    # OR for development: npm run dev
-    ```
+### ✅ Authentication
+- Login / Signup
+- JWT based authentication
+- Role-based protected routes (admin, store owner)
 
-## 3. API Endpoints Reference
+### ✅ Normal User
+- View all registered stores
+- Search stores
+- Rate any store (1 to 5 stars)
+- See overall store rating
 
-| Method | Endpoint | Access Role | Description |
-| :--- | :--- | :--- | :--- |
-| **POST** | `/api/users/signup` | Public | Registers a new user (`normal_user`). |
-| **POST** | `/api/auth/login` | Public | Logs in and returns a JWT token. |
-| **PUT** | `/api/users/change-password` | Authenticated | Updates authenticated user's password. |
-| **GET** | `/api/stores` | Public | Lists all stores, supports **Search** and **Sort**. |
-| **POST** | `/api/ratings` | Authenticated | Submits a new rating (Transactional). |
-| **PUT** | `/api/ratings` | Authenticated | **Modifies** an existing rating (Transactional). |
-| **GET** | `/api/stores/my-dashboard` | `store_owner` | Views store average rating and list of users who rated it. |
-| **GET** | `/api/admin/dashboard-stats` | `system_admin` | Total Users, Stores, and Ratings count. |
-| **GET** | `/api/admin/users` | `system_admin` | Lists all users, supports **Search**, **Filter** (`?role=`), and **Sort**. |
-| **POST** | `/api/admin/users` | `system_admin` | Creates a new user with any role. |
-| **POST** | `/api/stores` | `system_admin` | Creates a new store. |
+### ✅ Store Owner Dashboard
+- View their store details
+- View ratings received
+- View average rating
+- Ratings distribution summary
 
-## 4. 🛠️ Core Architectural & Security Features
+### ✅ System Admin Dashboard
+- Admin platform stats dashboard:
+  - Total Users
+  - Total Stores
+  - Total Ratings
+- User Management
+  - List/Search/Filter/Sort users
+  - Create users with roles:
+    - Normal User
+    - Store Owner
+    - System Admin
+- Store Management
+  - Create stores and assign **store_owner**
 
-### 4.1. Atomic Database Transactions
-Rating submission/modification is a two-step transactional process: 
-1.  Update the `Rating` table.
-2.  Recalculate and update the average in the `Store` table.
-The entire flow is managed by Sequelize to ensure **rollback** upon failure, guaranteeing data consistency.
+---
 
-### 4.2. Authorization Model
-* **Role-Based Authorization (RBAC):** Middleware protects Admin/Owner features (`403 Forbidden` on unauthorized access).
-* **ID-Based Authorization:** User can only modify their own resources (`PUT /api/ratings` is only allowed if `req.user.id` matches the rating owner's ID).
+## 👥 Roles & Permissions
 
-### 4.3. Strict Input Validation
-All entry points are protected by `express-validator` enforcing strict rules:
-* **Name:** Min 20 / Max 60 chars.
-* **Password:** 8-16 chars, must include 1 Uppercase and 1 Special Character.
-* **Rating Value:** Integer between 1 and 5.
+| Role | Permissions |
+|------|------------|
+| Normal User | View stores + Rate stores |
+| Store Owner | View own store dashboard + ratings |
+| System Admin | Manage users, create stores, view stats |
 
-## 5. 🧪 Verification & Testing Guide
+---
 
-### 5.1. Transactional Rating Modification Flow
+## 🛠 Tech Stack
 
-1.  **POST /api/ratings:** Submit an initial rating (e.g., `value: 3` for `storeId: 1`) using a Normal User token. (Expected: `201 Created`).
-2.  **PUT /api/ratings:** Update the rating for the same store (e.g., `value: 5`).
-3.  **Expected:** `200 OK`. The database check should confirm the `Rating` table value is **5** and the `Store` table's `rating` average is also updated accordingly.
+### Frontend
+- React.js + Vite
+- Tailwind CSS
+- React Router DOM
+- Axios / Fetch API
 
-### 5.2. Security Check (Forbidden Access)
+### Backend
+- Node.js
+- Express.js
+- Sequelize ORM
+- PostgreSQL / MySQL (SQL database)
+- JWT Authentication
+- express-validator (backend validation)
 
-1.  Login as `normal_user` (`<USER_TOKEN>`).
-2.  Attempt to access an Admin route: **GET /api/admin/dashboard-stats**
-3.  **Header:** `Authorization: Bearer <USER_TOKEN>`
-4.  **Expected:** `403 Forbidden`.
+---
+
